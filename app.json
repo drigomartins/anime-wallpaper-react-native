@@ -1,0 +1,35 @@
+{
+  "expo": {
+    "name": "Anime Wallpaper",
+    "slug": "dark-knight-anime-wallpaper",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "icon": "./assets/icon.png",
+    "userInterfaceStyle": "light",
+    "splash": {
+      "image": "./assets/splash.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#ffffff"
+    },
+    "assetBundlePatterns": [
+      "**/*"
+    ],
+    "ios": {
+      "supportsTablet": true
+    },
+    "android": {
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/adaptive-icon.png",
+        "backgroundColor": "#ffffff"
+      },
+      "package": "com.drigo.oliveira94.darkknightanimewallpaper"
+    },
+    "web": {
+      "favicon": "./assets/favicon.png"
+    }
+  },
+  "react-native-google-mobile-ads": {
+    "android_app_id": "ca-app-pub-6202074218659375~9656629017",
+    "ios_app_id": "ca-app-pub-6202074218659375~9656629017"
+  }
+}
