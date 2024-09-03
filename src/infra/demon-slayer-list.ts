@@ -235,4 +235,47 @@ export const demonSlayerList: WallpaperItem[] = [
     category: 'demon-slayer',
     star: false,
   },
+  {
+    name: 'Zenitsu Demon Slayer',
+    link: 'https://i.pinimg.com/736x/5b/a2/99/5ba299c8cb90cec876e07571ff1db6c6.jpg',
+    category: 'demon-slayer',
+    star: false,
+  },
+  {
+    name: 'Zenitsu Demon Slayer',
+    link: 'https://i.pinimg.com/736x/df/1c/95/df1c95cee266ecc0fc6288585df42e55.jpg',
+    category: 'demon-slayer',
+    star: false,
+  },
+  {
+    name: 'Zenitsu Demon Slayer',
+    link: 'https://i.pinimg.com/564x/31/20/6b/31206b3ece8266c4e87c829c9a569dc3.jpg',
+    category: 'demon-slayer',
+    star: false,
+  },
+  {
+    name: 'Zenitsu Demon Slayer',
+    link: 'https://i.pinimg.com/736x/6c/99/22/6c9922d3947a1079d636f52a72bacf6c.jpg',
+    category: 'demon-slayer',
+    star: false,
+  },
+  {
+    name: 'Zenitsu Demon Slayer',
+    link: 'https://i.pinimg.com/736x/f8/d0/a1/f8d0a16d4d125e75cbd9b910cb0bb4d5.jpg',
+    category: 'demon-slayer',
+    star: false,
+  },
+  {
+    name: 'Zenitsu Demon Slayer',
+    link: 'https://i.pinimg.com/736x/3d/ea/b4/3deab4f9937f9bcfbe511cfee4fd5bfa.jpg',
+    category: 'demon-slayer',
+    star: false,
+  },
+  {
+    name: 'Zenitsu Demon Slayer',
+    link: 'https://i.pinimg.com/736x/e3/d3/b6/e3d3b681d12b427e53ebc4ed3da26492.jpg',
+    category: 'demon-slayer',
+    star: false,
+  },
+ 
 ];
