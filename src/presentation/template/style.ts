@@ -26,16 +26,6 @@ export const HeaderView = styled.View<Props>`
   flex-direction: row;
   padding: ${getStatusBarHeight()}px 25px 20px;
 `;
-export const ContainerImageView = styled.View`
-  width: 100%;
-  padding: 0px 25px;
-`;
-export const ContentAds = styled.View`
-  margin-top: 10px;
-  width: 100%;
-  overflow: hidden;
-  border-radius: 10px;
-`;
 export const ImageView = styled.Image`
   width: 100%;
   height: 70px;
@@ -57,3 +47,4 @@ export const TitleView = styled.Text<Props>`
   width: 200px;
   color: ${(props) => (props.theme === 'light' ? '#292d3e' : '#ffffff')};
 `;
+export const PressableView = styled.Pressable``;

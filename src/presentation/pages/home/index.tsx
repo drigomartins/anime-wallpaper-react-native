@@ -1,144 +1,143 @@
 import React, { useEffect, useState } from 'react';
-import Ionicons from '@expo/vector-icons/Ionicons';
-import { Controller, useForm } from 'react-hook-form';
-import { zodResolver } from '@hookform/resolvers/zod';
-import { z } from 'zod';
-import { InterstitialAd, AdEventType } from 'react-native-google-mobile-ads';
+import {
+  InterstitialAd,
+  AdEventType,
+  TestIds,
+} from 'react-native-google-mobile-ads';
+import { FlatList } from 'react-native';
+import { BannerAd, BannerAdSize } from 'react-native-google-mobile-ads';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
+import { Category, WallpaperItem } from '@/domain';
+import { wallpaperList } from '@/infra';
 import { TemplateRoot } from '@/presentation/template';
-import { PressableOption, Input, CalcDetail } from '@/presentation/components';
+import { useTheme } from '@/presentation/context/theme';
 
 import {
-  AlignOptionsView,
-  ButtonView,
+  ContainerBannerView,
+  ContainerImageView,
   ContainerView,
+  ContentAds,
+  FadeView,
+  ImageBannerView,
+  ImageView,
   PressableView,
+  TextView,
 } from './style';
+import { Props } from './type';
 
-const formSchema = z.object({
-  ['product-value']: z.coerce.number(),
-  ['entry-value']: z.coerce.number(),
-  months: z.coerce.number(),
-  fees: z.coerce.number(),
-});
+const interstitial = InterstitialAd.createForAdRequest(TestIds.INTERSTITIAL);
 
-type FormSchema = z.infer<typeof formSchema>;
+export const Home: React.FC<Props> = ({ navigation }) => {
+  const { setCategory, setWallpaper } = useTheme();
+  const [filteredCategory, setFilteredCategory] = useState<Category[]>([]);
 
-const interstitial = InterstitialAd.createForAdRequest(
-  'ca-app-pub-6202074218659375/4143382226'
-);
-
-export const Home: React.FC = () => {
-  const {
-    handleSubmit,
-    setValue,
-    control,
-    formState: { isDirty, isValid },
-  } = useForm<FormSchema>({
-    resolver: zodResolver(formSchema),
-    mode: 'onChange',
-  });
-  const [openInfo, setOpenInfo] = useState<boolean>(false);
-  const [data, setData] = useState<FormSchema>();
-
-  const toggleOpenInfo = (): void => {
-    setOpenInfo(!openInfo);
+  const getRandom = (wallpaper: WallpaperItem[]): WallpaperItem => {
+    return wallpaper[Math.floor(Math.random() * wallpaper.length)];
   };
 
-  const onSubmit = (values: FormSchema) => {
-    interstitial.loaded && interstitial.show();
-    setData(values);
-    toggleOpenInfo();
+  const getRandomImageByCategory = (category: Category): string => {
+    const filterCategory = wallpaperList.filter(
+      (data) => data.category === category
+    );
+    return getRandom(filterCategory).link;
+  };
+
+  const getRandomImage = (): string => {
+    return getRandom(wallpaperList).link;
+  };
+
+  const getCategoryName = (category: Category): string => {
+    const filterCategory = wallpaperList.filter(
+      (data) => data.category === category
+    );
+    return filterCategory[0].name;
+  };
+
+  const getCategoryList = (): void => {
+    const filterCategory = wallpaperList.map((data) => data.category);
+    setFilteredCategory(
+      filterCategory.reduce(function (a: any, b: any) {
+        if (a.indexOf(b) < 0) a.push(b);
+        return a;
+      }, [])
+    );
+  };
+
+  const getStorageInfo = async (): Promise<void> => {
+    try {
+      const value = await AsyncStorage.getItem('wallpaper');
+      const categoryName = await AsyncStorage.getItem('category');
+      await AsyncStorage.removeItem('wallpaper');
+      await AsyncStorage.removeItem('category');
+      if (value) {
+        setWallpaper(JSON.parse(value));
+        setCategory(categoryName);
+        navigation.navigate('Item');
+      }
+    } catch (e) {
+      // error reading value
+    }
   };
 
   useEffect(() => {
+    getStorageInfo();
+    getCategoryList();
+
     const unsubscribe = interstitial.addAdEventListener(
       AdEventType.LOADED,
       () => {}
     );
-
-    // Start loading the interstitial straight away
     interstitial.load();
-
-    // Unsubscribe from events on unmount
     return unsubscribe;
   }, []);
 
   return (
-    <TemplateRoot>
+    <TemplateRoot page="home" returnPage={navigation.navigate}>
+      <ContainerBannerView>
+        <ImageBannerView
+          blurRadius={5}
+          source={{
+            uri: getRandomImage(),
+          }}
+        />
+        <FadeView source={require('../../../../assets/fade-dark-mode.png')} />
+      </ContainerBannerView>
+      <ContainerImageView>
+        <ContentAds>
+          <BannerAd
+            unitId={'ca-app-pub-6202074218659375/7798136606'}
+            size={BannerAdSize.ANCHORED_ADAPTIVE_BANNER}
+            requestOptions={{
+              requestNonPersonalizedAdsOnly: true,
+            }}
+          />
+        </ContentAds>
+      </ContainerImageView>
       <ContainerView>
-        <Controller
-          control={control}
-          render={({ field: { onChange, onBlur, value } }) => (
-            <Input
-              title="Valor do Produto"
-              value={value?.toString()}
-              keyboardType="numeric"
-              onChangeText={(text: string) => onChange(text)}
-              money
-            />
+        <FlatList
+          data={filteredCategory}
+          numColumns={1}
+          keyExtractor={(item, index) => `key-${index}`}
+          removeClippedSubviews={true}
+          scrollEnabled={false}
+          renderItem={({ item }) => (
+            <PressableView
+              onPress={() => {
+                navigation.navigate('List');
+                setCategory(item);
+              }}
+            >
+              <ImageView
+                source={{
+                  uri: getRandomImageByCategory(item),
+                }}
+              />
+              <TextView>{getCategoryName(item)}</TextView>
+            </PressableView>
           )}
-          name="product-value"
-          rules={{ required: true }}
         />
-        <Controller
-          control={control}
-          render={({ field: { onChange, onBlur, value } }) => (
-            <Input
-              title="Valor da Entrada"
-              value={value?.toString()}
-              keyboardType="numeric"
-              onChangeText={(text: string) => onChange(text)}
-              money
-            />
-          )}
-          name="entry-value"
-          rules={{ required: true }}
-        />
-        <Controller
-          control={control}
-          render={({ field: { onChange, onBlur, value } }) => (
-            <Input
-              title="Numero de Parcelas"
-              value={value?.toString()}
-              keyboardType="numeric"
-              onChangeText={(text: string) => onChange(text)}
-            />
-          )}
-          name="months"
-          rules={{ required: true }}
-        />
-        <AlignOptionsView>
-          <PressableOption value="12x" onPress={() => setValue('months', 12)} />
-          <PressableOption value="24x" onPress={() => setValue('months', 24)} />
-          <PressableOption value="48x" onPress={() => setValue('months', 48)} />
-          <PressableOption value="60x" onPress={() => setValue('months', 60)} />
-        </AlignOptionsView>
-        <Controller
-          control={control}
-          render={({ field: { onChange, onBlur, value } }) => (
-            <Input
-              title="Taxa de juros Mensal"
-              value={value?.toString()}
-              keyboardType="numeric"
-              onChangeText={(text: string) => onChange(text)}
-            />
-          )}
-          name="fees"
-          rules={{ required: true }}
-        />
-        <PressableView
-          onPress={handleSubmit(onSubmit)}
-          disabled={!isDirty && !isValid}
-          color={!isDirty && !isValid}
-        >
-          <ButtonView>Assista para calcular</ButtonView>
-          <Ionicons name="videocam" size={18} color="#ffffff" />
-        </PressableView>
       </ContainerView>
-      {openInfo && (
-        <CalcDetail dataCalc={data} onClose={() => toggleOpenInfo()} />
-      )}
     </TemplateRoot>
   );
 };

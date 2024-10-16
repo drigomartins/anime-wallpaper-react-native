@@ -1,27 +1,33 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { StatusBar } from 'expo-status-bar';
 import { SafeAreaView } from 'react-native';
 import Ionicons from '@expo/vector-icons/Ionicons';
-import { BannerAd, BannerAdSize } from 'react-native-google-mobile-ads';
 
 import { useTheme } from '@/presentation/context';
 
 import {
   AlignTitleView,
-  ContainerImageView,
   ContainerView,
-  ContentAds,
   HeaderView,
-  ImageView,
+  PressableView,
   SubTitleView,
   TitleView,
   ToggleThemeView,
 } from './style';
 
-interface Props extends React.PropsWithChildren {}
+type PageContextType = 'home' | 'list' | 'item';
 
-export const TemplateRoot: React.FC<Props> = ({ children }) => {
-  const { theme, setTheme } = useTheme();
+interface Props extends React.PropsWithChildren {
+  page: PageContextType;
+  returnPage?: (data: string) => void;
+}
+
+export const TemplateRoot: React.FC<Props> = ({
+  children,
+  page,
+  returnPage,
+}) => {
+  const { theme, setTheme, currentPage } = useTheme();
 
   const getTheme = (theme: string, light: string, dark: string): string => {
     return theme === 'light' ? light : dark;
@@ -36,10 +42,34 @@ export const TemplateRoot: React.FC<Props> = ({ children }) => {
           style={getTheme(theme, 'dark', 'light')}
         />
         <HeaderView>
-          <AlignTitleView>
-            <SubTitleView theme={theme}>SIMULADOR</SubTitleView>
-            <TitleView theme={theme}>FINANCIAMENTO DE VEICULOS</TitleView>
-          </AlignTitleView>
+          {page === 'home' && (
+            <AlignTitleView>
+              <SubTitleView theme={theme}>ANIME</SubTitleView>
+              <TitleView theme={theme}>WALLPAPER</TitleView>
+            </AlignTitleView>
+          )}
+          {page === 'list' && (
+            <AlignTitleView>
+              <PressableView onPress={() => returnPage && returnPage('Home')}>
+                <Ionicons
+                  name={'return-up-back'}
+                  size={25}
+                  color={theme === 'light' ? '#292d3e' : '#ffffff'}
+                />
+              </PressableView>
+            </AlignTitleView>
+          )}
+          {page === 'item' && (
+            <AlignTitleView>
+              <PressableView onPress={() => returnPage && returnPage('List')}>
+                <Ionicons
+                  name={'return-up-back'}
+                  size={25}
+                  color={theme === 'light' ? '#292d3e' : '#ffffff'}
+                />
+              </PressableView>
+            </AlignTitleView>
+          )}
           <ToggleThemeView
             onPress={() => setTheme(theme === 'light' ? 'dark' : 'light')}
           >
@@ -50,18 +80,6 @@ export const TemplateRoot: React.FC<Props> = ({ children }) => {
             />
           </ToggleThemeView>
         </HeaderView>
-        <ContainerImageView>
-          <ImageView source={require('../../../assets/background-finan.png')} />
-          <ContentAds>
-            <BannerAd
-              unitId={'ca-app-pub-6202074218659375/6934208855'}
-              size={BannerAdSize.ANCHORED_ADAPTIVE_BANNER}
-              requestOptions={{
-                requestNonPersonalizedAdsOnly: true,
-              }}
-            />
-          </ContentAds>
-        </ContainerImageView>
         {children}
       </ContainerView>
     </SafeAreaView>
